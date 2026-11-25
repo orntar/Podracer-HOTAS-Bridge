@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Podracer Bridge
+Comment=Calibrate and map a dual-handle podracing rig
+Exec=AppRun
+Icon=podracer-bridge
+Terminal=false
+Categories=Game;Utility;
+StartupNotify=false

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Podracer Bridge</title><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<div class="shell">
+ <header><div class="brand"><img src="icon.svg" alt="" width="42" height="42"><div><span class="eyebrow">FLIGHT DECK / LINUX</span><h1>Podracer Bridge</h1></div></div><div class="header-right"><span id="mode" class="badge">OUTPUT OFF</span><button id="quit" class="quiet">Quit app</button></div></header>
+ <section class="hero"><div><p class="eyebrow">TWO HANDLES. ONE CONTROLLER.</p><h2>Now This Is Podracing.</h2><p>Calibrate your rig, shape its response, and take your settings into the game.</p></div><div class="hero-actions"><button id="start" class="primary" disabled>Start output</button><button id="stop" class="danger" disabled>Stop output</button></div></section>
+ <div id="notice" role="status" aria-live="polite">Connecting to the local app…</div>
+ <div id="error" role="alert" hidden></div>
+ <section class="card device-card"><div class="section-title"><span class="step">01</span><div><h3>Your controller</h3><p>The joystick firmware stays on your Arduino.</p></div></div><div class="device-controls"><select id="devices" aria-label="Physical controller"><option value="">Select a controller</option></select><button id="refresh">Refresh</button><button id="connect">Connect</button><button id="disconnect" class="quiet">Disconnect</button></div><p id="device-detail" class="muted">Connect the rig by USB. The app never selects a device automatically.</p></section>
+ <section class="telemetry" aria-label="Live controller monitor">
+  <div class="meter-card"><span>LEFT HANDLE</span><strong id="left-value">0%</strong><progress id="left-meter" max="100" value="0" aria-label="Left handle travel"></progress><small id="left-raw">Raw —</small></div>
+  <div class="meter-card"><span>RIGHT HANDLE</span><strong id="right-value">0%</strong><progress id="right-meter" max="100" value="0" aria-label="Right handle travel"></progress><small id="right-raw">Raw —</small></div>
+  <div class="meter-card"><span>STEERING</span><strong id="steer-value">CENTER</strong><div class="steer-track"><i id="steer-dot"></i></div><small>Left stick X</small></div>
+  <div class="meter-card"><span>THROTTLE / BRAKE</span><strong><b id="throttle-value">0%</b><em id="brake-value">0%</em></strong><progress id="throttle-meter" max="100" value="0" aria-label="Throttle"></progress><small>Right trigger / left trigger</small></div>
+ </section>
+ <p class="monitor-note" id="monitor-note">Preview only · no input is being sent to games.</p>
+ <section id="demo-controls" class="card" hidden><h3>Demo inputs</h3><p>These sliders simulate the rig. Demo mode never creates devices or sends keys.</p><div class="two-col"><label>Left handle<input id="demo-left" type="range" min="0" max="1" step=".01" value="0"></label><label>Right handle<input id="demo-right" type="range" min="0" max="1" step=".01" value="0"></label></div><button id="demo-brake">Hold to test brake</button></section>
+ <nav class="tabs" aria-label="Settings sections"><button data-tab="calibration" class="selected">Calibration</button><button data-tab="tuning">Steering & throttle</button><button data-tab="buttons">Button mappings</button><button data-tab="profiles">Profiles</button><button data-tab="access">Device access & help</button></nav>
+ <main>
+  <section id="calibration" class="panel card">
+   <div class="section-title"><span class="step">02</span><div><h3>Set the physical stops</h3><p>Capture fully back as idle, then fully forward as full. Reversed wiring is handled automatically.</p></div></div>
+   <div class="two-col" id="calibration-fields"></div>
+   <p class="hint">The supplied firmware uses half of its reported axis range. Capture the actual endpoints here; do not assume the raw values should start at zero. Changing the Arduino's calibration later means recalibrating here too.</p>
+  </section>
+  <section id="tuning" class="panel card" hidden>
+   <div class="section-title"><span class="step">03</span><div><h3>Make the rig feel like yours</h3><p>Both forward accelerates. More left-handle thrust steers right; invert if your preference is the opposite.</p></div></div>
+   <div class="tuning-layout"><div id="tuning-fields"></div><aside><canvas id="curve" width="520" height="320" aria-label="Steering and throttle response curve preview" role="img"></canvas><div class="legend"><span class="cyan">● Throttle</span><span class="amber">● Steering</span></div><p class="hint">Curve 1 is linear. Higher curves soften the initial response; lower curves make it more immediate.</p><p class="hint">Preserve thrust blends the average of the two handles (0%) with the higher handle (100%). This is this app's own mixer, not an exact copy of JaffaQuake's hybrid behavior.</p></aside></div>
+   <label class="check"><input type="checkbox" id="invert-steering"> Invert steering direction</label><label class="check"><input type="checkbox" id="brake-cuts"> Brake overrides throttle</label>
+  </section>
+  <section id="buttons" class="panel card" hidden>
+   <div class="section-title"><span class="step">04</span><div><h3>Every control, your choice</h3><p>Press a physical control to highlight its row. The firmware's ability button cycles through rows 5–8.</p></div></div>
+   <p class="hint">Mappings are held while pressed. Shared actions stay held until all their controls are released. Defaults combine gamepad steering/throttle/brake with the original keyboard actions.</p>
+   <div class="table-wrap"><table><thead><tr><th>Input</th><th>Rig control</th><th>Output action</th></tr></thead><tbody id="mapping-rows"></tbody></table></div>
+   <p class="hint">Keyboard mappings type into the focused window. Switch to your game before using them. If the game rejects mixed keyboard/gamepad input, remap actions to gamepad buttons and test its controller bindings.</p>
+  </section>
+  <section id="profiles" class="panel card" hidden>
+   <div class="section-title"><span class="step">05</span><div><h3>Save a setup for each game</h3><p>Profiles include device identity, handle calibration, tuning, and every button mapping.</p></div></div>
+   <div class="two-col"><div><label for="profile-name">Save current settings as</label><input id="profile-name" maxlength="48" value="Default"><button id="save" class="primary">Save profile</button><p class="hint">Saving also applies your settings and stops output. Use “Default” to load this profile automatically next time.</p></div><div><label for="profile-list">Saved profiles</label><select id="profile-list"></select><button id="load">Load profile</button><button id="export">Export JSON</button><label class="file-label">Import JSON<input id="import" type="file" accept=".json,application/json"></label><p class="hint">Loading or importing stops output and disconnects the rig. Reconnect the matching controller before starting.</p></div></div><p id="profile-path" class="muted"></p>
+  </section>
+  <section id="access" class="panel card" hidden>
+   <h3>Bazzite setup</h3><p>This AppImage bundles the bridge and dashboard. It needs no Python, extra packages, or Windows drivers. The dashboard runs only on your own computer.</p>
+   <h4>1. Device permissions, only if needed</h4><p id="access-status"></p><p>If your rig is missing or starting output reports permission denied, choose its USB entry below. The command installs a device-specific access rule and enables Linux's existing virtual-input module. It modifies two small files under <code>/etc</code>; it does not install packages or change the operating-system image.</p>
+   <select id="usb-device" aria-label="USB device for permission setup"><option value="">Select the Arduino / Pro Micro USB device</option></select><p class="hint">Select your controller, not a keyboard, mouse, or USB hub. If its name is unclear, unplug/replug it and reopen the app to compare the list.</p><pre id="setup-command">Choose the controller to generate its setup command.</pre><button id="copy-setup">Copy setup command</button><p>Run the command once in a terminal, then unplug/replug the rig. Launch the app normally afterward. Do not run the dashboard with sudo. If access remains denied, log out and back in or reboot.</p>
+   <h4>2. Calibrate and start</h4><ol><li>Use the <strong>joystick firmware</strong> with <code>joystickMode = true</code>.</li><li>Connect the rig in this dashboard. Capture both stops for each handle, then apply and save.</li><li>Start output. Move both handles to idle and release all buttons and toggles to arm it.</li><li>Open Steam's controller test and check <strong>Podracer Bridge Xbox 360</strong>. Then launch the game with its default controller scheme.</li></ol>
+   <h4>3. While playing</h4><p>Keep the app running. Closing the browser tab does not stop the bridge. Reopen the dashboard using its launch URL, or stop the app from its terminal. Use <strong>Stop output</strong> before changing games; <strong>Quit app</strong> releases inputs and closes the engine.</p><p>The physical joystick is reserved while output is active to reduce duplicate input. If Steam still sees both devices, select the virtual gamepad and avoid binding the physical Arduino. Steam Input settings vary by game; test the virtual controller before adjusting those settings. No rumble is provided.</p>
+   <h4>Recovery</h4><p>Unplugging the rig stops virtual output. Reconnect it explicitly; output never restarts automatically. Changing settings or loading a profile also stops output. After sleep/suspend, start output again. The bridge does not detect whether your game is focused.</p>
+   <h4>Removing the permission setup</h4><p>Delete only the <code>70-podracer-bridge-VENDOR-PRODUCT.rules</code> file created for your rig from <code>/etc/udev/rules.d</code>, and <code>/etc/modules-load.d/podracer-bridge.conf</code> if you no longer use the bridge. Reboot to apply. Profiles remain in your home folder.</p>
+  </section>
+ </main>
+ <div class="apply-bar"><span id="dirty">Settings match the engine.</span><button id="apply" class="primary">Apply settings · stops output</button></div>
+ <footer><span>Podracer Bridge <span id="version">0.1.0</span> · Independent companion app</span><span>Local only · No account · No telemetry</span></footer>
+</div>
+</body></html>

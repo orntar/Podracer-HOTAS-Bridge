@@ -1,0 +1,33 @@
+PODRACER BRIDGE 0.1.0 — BAZZITE / FEDORA x86-64
+
+This is the first hardware-test build. Software tests passed on the build
+computer; the AppImage and physical controller still need a Bazzite test.
+
+1. Copy PodracerBridge-0.1.0-x86_64.AppImage to your Linux home folder.
+2. Right-click > Properties > Permissions > allow execution.
+3. Double-click it. A local dashboard opens in your browser.
+4. Use your joystick Arduino firmware (joystickMode = true).
+5. Select the controller, capture both handle endpoints, apply settings,
+   and save the Default profile.
+6. Start output, return both handles to idle, and release all controls.
+7. Test Podracer Bridge Xbox 360 in Steam before launching the game.
+
+No runtime packages need to be installed. If input-device permissions are
+missing, Device access & help generates a one-time setup command for your rig.
+Run the dashboard normally, NOT with sudo.
+
+Keep the app running while playing. Closing the browser tab does not stop it.
+Use Stop output before changing games; Quit app closes the engine.
+
+Defaults use gamepad steering/throttle/brake plus the original keyboard actions.
+Keyboard actions affect the focused window. Mixed-input support must be checked
+in the game. Button mappings can be changed and saved in the dashboard.
+
+If double-clicking fails, try from a terminal:
+  ./PodracerBridge-0.1.0-x86_64.AppImage --appimage-extract-and-run
+
+To preview without hardware:
+  ./PodracerBridge-0.1.0-x86_64.AppImage --demo
+
+README.md has full instructions, limitations, and build information.
+VALIDATION.md records what has and has not been tested.

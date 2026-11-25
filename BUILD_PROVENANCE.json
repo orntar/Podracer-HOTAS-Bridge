@@ -1,0 +1,10 @@
+{
+  "runtime_api_digest": "sha256:617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46",
+  "runtime_sha256": "617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46",
+  "squashfs_download": "https://github.com/michaelkschmidt/squashfs-tools/releases/download/v4.3.1/squashfs.4.3.1.nupkg",
+  "squashfs_sha256": "e5ea2fa3085bb3a4db875596d90fcd8ddc038d0b97db10637c03a39791f16121",
+  "runtime_download": "https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64",
+  "go_version": "go1.27.4",
+  "go_archive_sha256": "178ab98950ac69ab25069307dc6ade79f3816e414cce95b4da166a115cde1e7e",
+  "runtime_commit": "fedfad51acc2860b2916a1eef32ba4a500ff31ef"
+}
